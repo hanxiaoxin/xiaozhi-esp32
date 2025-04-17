@@ -325,5 +325,5 @@ bool Ota::IsNewVersionAvailable(const std::string& currentVersion, const std::st
         }
     }
     
-    return newer.size() > current.size();
+    return false;
 }
