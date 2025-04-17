@@ -34,6 +34,7 @@ void WebsocketProtocol::SendAudio(const std::vector<uint8_t>& data) {
 }
 
 bool WebsocketProtocol::SendText(const std::string& text) {
+    ESP_LOGW(TAG, "send text: %s", text.c_str());
     if (websocket_ == nullptr) {
         return false;
     }
@@ -66,6 +67,7 @@ bool WebsocketProtocol::OpenAudioChannel() {
     error_occurred_ = false;
     std::string url = CONFIG_WEBSOCKET_URL;
     std::string token = "Bearer " + std::string(CONFIG_WEBSOCKET_ACCESS_TOKEN);
+    ESP_LOGW(TAG, "token: %s", token.c_str());
     websocket_ = Board::GetInstance().CreateWebSocket();
     websocket_->SetHeader("Authorization", token.c_str());
     websocket_->SetHeader("Protocol-Version", "1");

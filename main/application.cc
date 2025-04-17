@@ -65,6 +65,8 @@ void Application::CheckNewVersion() {
     const int MAX_RETRY = 10;
     int retry_count = 0;
 
+    return;
+
     while (true) {
         auto display = Board::GetInstance().GetDisplay();
         if (!ota_.CheckVersion()) {
