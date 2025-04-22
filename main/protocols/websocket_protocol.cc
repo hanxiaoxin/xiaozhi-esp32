@@ -76,10 +76,12 @@ bool WebsocketProtocol::OpenAudioChannel() {
 
     websocket_->OnData([this](const char* data, size_t len, bool binary) {
         if (binary) {
+            ESP_LOGI(TAG, "receive audio, %d", len);
             if (on_incoming_audio_ != nullptr) {
                 on_incoming_audio_(std::vector<uint8_t>((uint8_t*)data, (uint8_t*)data + len));
             }
         } else {
+            ESP_LOGI(TAG, "receive json, %s", data);
             // Parse JSON data
             auto root = cJSON_Parse(data);
             auto type = cJSON_GetObjectItem(root, "type");
