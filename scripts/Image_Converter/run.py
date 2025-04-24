@@ -5,6 +5,11 @@ import sys
 from LVGLImage import LVGLImage, ColorFormat, CompressMethod
 import shutil
 
+def clean_file(file):
+    if os.path.isfile(file):
+        print(f"已删除文件: {file}")
+        os.unlink(file)
+
 def clean_directory(directory):
     if not os.path.exists(directory):
         print(f"目录 {directory} 不存在。")
@@ -22,16 +27,24 @@ def clean_directory(directory):
         except Exception as e:
             print(f"删除 {item_path} 失败: {e}")
 
+def create_dir(folder_path):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"文件夹 '{folder_path}' 已创建")
+    else:
+        pass
+
 
 current_dir = os.getcwd()
 # 拼接 images 文件夹路径
 images_path = os.path.join(current_dir, "images")
-output_path = os.path.join(current_dir, "output")
+output_dir = os.path.join(current_dir, "output")
 
+create_dir(output_dir)
 
-clean_directory(output_path)
+clean_directory(output_dir)
 
-print(images_path, output_path)
+print(images_path, output_dir)
 
 # 列出所有文件（过滤文件夹）
 files = [
@@ -42,6 +55,7 @@ print(files)
 def convert_images(input_files, width, height, compress):
     success_count = 0
     total_files = len(input_files)
+    print(width, height, compress)
 
     for idx, file_path in enumerate(input_files):
         try:
@@ -74,10 +88,12 @@ def convert_images(input_files, width, height, compress):
 
                 # 保存调整后的图片
                 base_name = os.path.splitext(os.path.basename(file_path))[0]
+                output_path = f"{output_dir}/{width}"
+                create_dir(output_path)
                 output_image_path = os.path.join(
                     output_path, f"{base_name}_{width}x{height}.png"
                 )
-                # img.save(output_image_path, "PNG")
+                img.save(output_image_path, "PNG")
 
                 # 创建临时文件
                 with tempfile.NamedTemporaryFile(
@@ -88,7 +104,7 @@ def convert_images(input_files, width, height, compress):
 
                 # 转换为LVGL C数组
                 lvgl_img = LVGLImage().from_png(temp_path, cf=cf)
-                output_c_path = os.path.join(output_path, f"{base_name}.c")
+                output_c_path = os.path.join(output_path, f"{base_name}_{width}.c")
                 lvgl_img.to_c_array(output_c_path, compress=compress)
 
                 success_count += 1
@@ -103,5 +119,4 @@ def convert_images(input_files, width, height, compress):
 
 
 convert_images(files, 64, 64, CompressMethod.NONE)
-
-
+convert_images(files, 32, 32, CompressMethod.NONE)
